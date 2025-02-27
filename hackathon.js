@@ -19,6 +19,23 @@ const HEADERS = [
     { text: "Data Streams", column: 8 },
 ];
 
+// Helper function to get metric colors (same as used in writeReportsToSheet)
+function getMetricColor(index) {
+    const metricColors = [
+        '#4285F4',  // Google Blue
+        '#0F9D58',  // Google Green
+        '#DB4437',  // Google Red
+        '#F4B400',  // Google Yellow
+        '#AA47BC',  // Purple
+        '#00ACC1',  // Cyan
+        '#FF7043',  // Deep Orange
+        '#9E9D24',  // Lime
+        '#5C6BC0',  // Indigo
+        '#00796B',  // Teal
+    ];
+    return metricColors[index % metricColors.length];
+}
+
 // Utility functions
 function handleError(error, context) {
     Logger.log(`Error in ${context}: ${error.toString()}`);
@@ -2199,6 +2216,7 @@ function formatGA4Response(response, options = {}) {
     };
 }
 
+// Modify createAnomalyReportHTML to return an object
 function createAnomalyReportHTML() {
     const sheet = SpreadsheetApp.getActiveSheet();
     const data = sheet.getDataRange().getValues();
@@ -2397,27 +2415,14 @@ function createAnomalyReportHTML() {
         </p>
     </div>`;
     
-    return html;
+    // Return object with both the HTML and anomaly count
+    return {
+        anomalyCount: totalAnomalyCount,
+        anomalyTable: html
+    };
 }
 
-// Helper function to get metric colors (same as used in writeReportsToSheet)
-function getMetricColor(index) {
-    const metricColors = [
-        '#4285F4',  // Google Blue
-        '#0F9D58',  // Google Green
-        '#DB4437',  // Google Red
-        '#F4B400',  // Google Yellow
-        '#AA47BC',  // Purple
-        '#00ACC1',  // Cyan
-        '#FF7043',  // Deep Orange
-        '#9E9D24',  // Lime
-        '#5C6BC0',  // Indigo
-        '#00796B',  // Teal
-    ];
-    return metricColors[index % metricColors.length];
-}
-
-// Update the sendAnomalyEmail function to use the HTML table
+// Modify sendAnomalyEmail to check for anomalies before sending
 function sendAnomalyEmail() {
     const propertyId = PropertiesService.getDocumentProperties().getProperty('selectedPropertyId');
     const propertyName = PropertiesService.getDocumentProperties().getProperty('selectedPropertyName');
@@ -2425,8 +2430,16 @@ function sendAnomalyEmail() {
     const receiver = PropertiesService.getDocumentProperties().getProperty('receiver') || Session.getActiveUser().getEmail();
     const spreadsheetUrl = SpreadsheetApp.getActive().getUrl();
 
-    // Generate HTML table from current sheet data
-    const anomalyTable = createAnomalyReportHTML();
+    // Generate HTML table and get anomaly count
+    const { anomalyCount, anomalyTable } = createAnomalyReportHTML();
+    
+    Logger.log("Anomaly Count:");
+    Logger.log(anomalyCount);
+    // Only send email if there are anomalies
+    if (anomalyCount === 0) {
+        Logger.log("No anomalies detected - skipping email notification");
+        return;
+    }
     
     const message = {
       to: receiver,
