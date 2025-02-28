@@ -770,14 +770,14 @@ function handlePropertySelection(propertyId, propertyName) {
                 <h3>Configure Detection</h3><span style="color: gray; font-size: 12px; margin-bottom: calc(var(--spacing-unit) * 3)">(PID: ${propertyId})</span>
 
                 <div class="report-type-selector">
-                    <h4>Anomaly Detection Type</h4>
+                    <h4>Data Comparison Type</h4>
                     <div class="report-type-option">
                         <input type="radio" id="reportTypeOneTime" name="reportType" value="oneTime" checked onchange="toggleReportOptions()">
-                        <label for="reportTypeOneTime">One-Time</label>
+                        <label for="reportTypeOneTime">Date Range</label>
                     </div>
                     <div class="report-type-option">
                         <input type="radio" id="reportTypeRecurring" name="reportType" value="recurring" onchange="toggleReportOptions()">
-                        <label for="reportTypeRecurring">Recurring</label>
+                        <label for="reportTypeRecurring">Over Time</label>
                     </div>
                 </div>
 
@@ -800,14 +800,14 @@ function handlePropertySelection(propertyId, propertyName) {
                 </div>
 
                 <div class="recurring-options" id="recurringOptions">
-                    <h4>Check Frequency</h4>
+                    <h4>Data Time Scope</h4>
                     <div class="recurring-option">
                         <input type="radio" id="recurringHourly" name="recurringOption" value="hourly">
-                        <label for="recurringHourly">Hourly</label>
+                        <label for="recurringHourly">Hourly (past 7 weeks' same hour and same day)</label>
                     </div>
                     <div class="recurring-option">
                         <input type="radio" id="recurringDaily" name="recurringOption" value="daily">
-                        <label for="recurringDaily">Daily</label>
+                        <label for="recurringDaily">Daily (past 7 weeks' same day)</label>
                     </div>
                 </div>
 
